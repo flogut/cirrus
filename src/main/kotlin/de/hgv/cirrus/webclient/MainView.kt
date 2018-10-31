@@ -15,9 +15,13 @@ import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.spring.server.SpringVaadinServlet
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
+import com.vaadin.ui.CheckBoxGroup
+import com.vaadin.ui.HorizontalLayout
 import com.vaadin.ui.Image
 import com.vaadin.ui.Label
+import com.vaadin.ui.PopupView
 import com.vaadin.ui.UI
+import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 import de.hgv.cirrus.DataRepository
 import de.hgv.cirrus.PictureRepository
@@ -35,7 +39,7 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
 
     override fun init(request: VaadinRequest) {
         setSizeFull()
-        Page.getCurrent().styles.add(".bg-dark-grey { background-color: #F0F0F0; }")
+        Page.getCurrent().styles.add(".bg-dark-grey { background-color: #F0F0F0; } .myPopup { top: 50% !important; left: 50% !important; }")
 
         val responsiveLayout = ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID)
 
@@ -84,15 +88,31 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
         }
 
         // Show Diagram Popup for small devices
+        val popupContent = VerticalLayout()
+        val checkBoxGroup = CheckBoxGroup<DataType>("Anzeigen", DataType.values().filterNot { it.isInternal() })
+        checkBoxGroup.select(*DataType.values().filterNot { it.isInternal() }.toTypedArray())
+        checkBoxGroup.addSelectionListener { event ->
+            event.addedSelection.forEach { show[it] = !show.getOrDefault(it, true); changeVisibility(it) }
+            event.removedSelection.forEach { show[it] = !show.getOrDefault(it, true); changeVisibility(it) }
+        }
+        val okButton = Button("OK")
+        popupContent.addComponents(checkBoxGroup, okButton)
+
+        val settingsPopup = PopupView(null, popupContent)
+        settingsPopup.styleName = "myPopup"
+        okButton.addClickListener {
+            settingsPopup.isPopupVisible = false
+        }
+
         val settingsButton = Button("Einstellungen") { event ->
-            // TODO Open settings popup
+            settingsPopup.isPopupVisible = true
         }
         settingsButton.icon = VaadinIcons.COG
         settingsButton.addStyleNames(ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_HUGE)
 
         sideMenu.addColumn()
             .withDisplayRules(12, 12, 12, 12)
-            .withComponent(settingsButton, ResponsiveColumn.ColumnComponentAlignment.CENTER)
+            .withComponent(HorizontalLayout(settingsButton, settingsPopup), ResponsiveColumn.ColumnComponentAlignment.CENTER)
             .setVisibilityRules(true, true, false, false)
 
         // Main Content
