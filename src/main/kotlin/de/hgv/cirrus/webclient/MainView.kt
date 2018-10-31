@@ -20,6 +20,7 @@ import com.vaadin.ui.Label
 import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
 import de.hgv.cirrus.DataRepository
+import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.DataType
 import org.slf4j.bridge.SLF4JBridgeHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired
 @SpringUI
 @Title("Wetterballon")
 @Push
-class MainView(@Autowired val dataRepository: DataRepository): UI() {
+class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pictureRepository: PictureRepository): UI() {
 
     private val show = mutableMapOf<DataType, Boolean>()
     private val columns = mutableMapOf<DataType, ResponsiveColumn>()
@@ -114,7 +115,7 @@ class MainView(@Autowired val dataRepository: DataRepository): UI() {
         for (dataType in DataType.values().filterNot { it.isInternal() }) {
             val column = containerRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
-                .withComponent(ContentView(dataType, dataRepository))
+                .withComponent(ContentView(dataType, dataRepository, pictureRepository))
 
             columns[dataType] = column
         }

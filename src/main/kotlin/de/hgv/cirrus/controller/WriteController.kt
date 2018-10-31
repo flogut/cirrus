@@ -42,6 +42,8 @@ class WriteController(val dataRepository: DataRepository,
 
         WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(pic))) }
 
+        UIs.getUpdateables(Picture::class).forEach { it.add(pic) }
+
         return pic
     }
 
