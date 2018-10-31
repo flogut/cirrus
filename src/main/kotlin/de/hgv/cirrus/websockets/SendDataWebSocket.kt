@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hgv.cirrus.DataRepository
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
+import de.hgv.cirrus.webclient.UIs
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
@@ -30,6 +31,8 @@ class SendDataWebSocket(val dataRepository: DataRepository): TextWebSocketHandle
         data = dataRepository.save(data)
 
         WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(data))) }
+
+        UIs.getUpdateables(Data::class).forEach { it.add(data) }
     }
 
 }

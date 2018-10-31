@@ -39,22 +39,28 @@ compileTestKotlin {
 
 repositories {
 	mavenCentral()
+	maven { url "https://dl.bintray.com/mvysny/github" }
+    maven { url "https://maven.vaadin.com/vaadin-addons" }
 }
 
 
 ext {
-	vaadinVersion = '10.0.5'
+	vaadinVersion = '8.5.2'
 }
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-data-rest')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-websocket')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 	compile('com.vaadin:vaadin-spring-boot-starter')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
+    compile("com.jarektoro:responsive-layout:2.1.1")
+    compile("com.vaadin:vaadin-push:${vaadinVersion}")
+//    compile("com.github.vok.karibudsl:karibu-dsl-v8")
+//	compile('com.github.appreciated:app-layout-addon:2.0.0')
+//	compile('at.downdrown.vaadinaddons:highchartsapi:2.2.1-QF')
 	runtime('mysql:mysql-connector-java')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
