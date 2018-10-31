@@ -19,13 +19,15 @@ import com.vaadin.ui.Image
 import com.vaadin.ui.Label
 import com.vaadin.ui.UI
 import com.vaadin.ui.themes.ValoTheme
+import de.hgv.cirrus.DataRepository
 import de.hgv.cirrus.model.DataType
 import org.slf4j.bridge.SLF4JBridgeHandler
+import org.springframework.beans.factory.annotation.Autowired
 
 @SpringUI
 @Title("Wetterballon")
 @Push
-class MainView: UI() {
+class MainView(@Autowired val dataRepository: DataRepository): UI() {
 
     private val show = mutableMapOf<DataType, Boolean>()
     private val columns = mutableMapOf<DataType, ResponsiveColumn>()
@@ -36,6 +38,7 @@ class MainView: UI() {
 
         val responsiveLayout = ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID)
 
+        responsiveLayout.setScrollable(true)
         responsiveLayout.setSizeFull()
 
         val rootResponsiveRow = responsiveLayout.addRow()
@@ -84,7 +87,7 @@ class MainView: UI() {
             // TODO Open settings popup
         }
         settingsButton.icon = VaadinIcons.COG
-        settingsButton.styleName = ValoTheme.BUTTON_BORDERLESS
+        settingsButton.addStyleNames(ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_HUGE)
 
         sideMenu.addColumn()
             .withDisplayRules(12, 12, 12, 12)
@@ -111,7 +114,7 @@ class MainView: UI() {
         for (dataType in DataType.values().filterNot { it.isInternal() }) {
             val column = containerRow.addColumn()
                 .withDisplayRules(12, 12, 4, 4)
-                .withComponent(ContentView(dataType))
+                .withComponent(ContentView(dataType, dataRepository))
 
             columns[dataType] = column
         }

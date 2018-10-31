@@ -58,9 +58,7 @@ dependencies {
 	compile("org.jetbrains.kotlin:kotlin-reflect")
     compile("com.jarektoro:responsive-layout:2.1.1")
     compile("com.vaadin:vaadin-push:${vaadinVersion}")
-//    compile("com.github.vok.karibudsl:karibu-dsl-v8")
-//	compile('com.github.appreciated:app-layout-addon:2.0.0')
-//	compile('at.downdrown.vaadinaddons:highchartsapi:2.2.1-QF')
+	compile("org.vaadin.highcharts:highcharts:2.1")
 	runtime('mysql:mysql-connector-java')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

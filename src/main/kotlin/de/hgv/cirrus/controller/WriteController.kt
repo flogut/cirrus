@@ -7,6 +7,7 @@ import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
 import de.hgv.cirrus.model.Picture
+import de.hgv.cirrus.webclient.UIs
 import de.hgv.cirrus.websockets.WebSocketSessions
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
@@ -57,6 +58,8 @@ class WriteController(val dataRepository: DataRepository,
         data = dataRepository.save(data)
 
         WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(data))) }
+
+        UIs.getUpdateables(Data::class).forEach { it.add(data) }
 
         return data
     }
