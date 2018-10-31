@@ -11,6 +11,8 @@ class ContentView(val type: DataType, val dataRepository: DataRepository, val pi
     private val contentView: Component = getContentView(type)
 
     init {
+        setSizeFull()
+
         compositionRoot = contentView
     }
 

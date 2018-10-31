@@ -71,7 +71,6 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
             .withGrow(false)
 
         // Show Diagram Buttons
-        val types = DataType.values().size
         for (dataType in DataType.values().filterNot { it.isInternal() }) {
             val button = Button(dataType.toString()) { event ->
                 show[dataType] = !show.getOrDefault(dataType, true)
@@ -104,7 +103,7 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
             settingsPopup.isPopupVisible = false
         }
 
-        val settingsButton = Button("Einstellungen") { event ->
+        val settingsButton = Button("Einstellungen") { _ ->
             settingsPopup.isPopupVisible = true
         }
         settingsButton.icon = VaadinIcons.COG

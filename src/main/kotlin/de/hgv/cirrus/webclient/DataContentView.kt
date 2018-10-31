@@ -12,7 +12,7 @@ class DataContentView(val type: DataType, val dataRepository: DataRepository) : 
     val chart: HighChart
 
     init {
-        Page.getCurrent().styles.add(".mychart { margin: 10px; }")
+        Page.getCurrent().styles.add(".mychart { padding: 10px; }")
 
         setSizeFull()
 

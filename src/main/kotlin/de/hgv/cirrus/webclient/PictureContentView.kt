@@ -1,6 +1,7 @@
 package de.hgv.cirrus.webclient
 
 import com.vaadin.server.FileResource
+import com.vaadin.server.Page
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Image
 import de.hgv.cirrus.CirrusApplication
@@ -15,9 +16,12 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
     var image: Image
 
     init {
+        Page.getCurrent().styles.add(".myimage { padding: 10px; }")
+
         image = Image(null, getNewestImage())
         image.setWidth("95%")
         image.setHeight("95%")
+        image.styleName = "myimage"
 
         compositionRoot = image
 
@@ -30,6 +34,7 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
             image = Image(null, FileResource(File("${picturesDirectory.path}\\${item.id}.jpg")))
             image.setWidth("95%")
             image.setHeight("95%")
+            image.styleName = "myimage"
             compositionRoot = image
         }
     }
