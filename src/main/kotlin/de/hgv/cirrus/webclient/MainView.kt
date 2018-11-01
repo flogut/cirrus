@@ -29,14 +29,16 @@ import org.springframework.beans.factory.annotation.Autowired
 @SpringUI
 @Title("Wetterballon")
 @Push
-class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pictureRepository: PictureRepository): UI() {
+class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pictureRepository: PictureRepository):
+    UI() {
 
     private val show = mutableMapOf<DataType, Boolean>()
     private val columns = mutableMapOf<DataType, ResponsiveColumn>()
 
     override fun init(request: VaadinRequest) {
         setSizeFull()
-        Page.getCurrent().styles.add(".bg-dark-grey { background-color: #F0F0F0; } .myPopup { top: 50% !important; left: 50% !important; }")
+        Page.getCurrent()
+            .styles.add(".bg-dark-grey { background-color: #F0F0F0; } .myPopup { top: 50% !important; left: 50% !important; }")
 
         val responsiveLayout = ResponsiveLayout(ResponsiveLayout.ContainerType.FLUID)
 
@@ -108,7 +110,10 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
 
         sideMenu.addColumn()
             .withDisplayRules(12, 12, 12, 12)
-            .withComponent(HorizontalLayout(settingsButton, settingsPopup), ResponsiveColumn.ColumnComponentAlignment.CENTER)
+            .withComponent(
+                HorizontalLayout(settingsButton, settingsPopup),
+                ResponsiveColumn.ColumnComponentAlignment.CENTER
+            )
             .setVisibilityRules(true, true, false, false)
 
         // Main Content
@@ -141,6 +146,8 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
 
     fun changeVisibility(dataType: DataType) {
         columns[dataType]?.isVisible = show[dataType] == true
+
+        (columns[dataType]?.component as? ContentView)?.changeVisibility(show[dataType] == true)
     }
 
     class SideMenu: ResponsiveRow() {

@@ -9,13 +9,23 @@ import org.vaadin.highcharts.HighChart
 
 class DataContentView(val type: DataType, val dataRepository: DataRepository) : CustomComponent(), Updateable<Data> {
 
-    val chart: HighChart
+    private lateinit var chart: HighChart
 
     init {
         Page.getCurrent().styles.add(".mychart { padding: 10px; }")
 
         setSizeFull()
 
+        setupChart()
+
+        UIs.add(Data::class, this)
+
+        addDetachListener {
+            UIs.remove(Data::class, this)
+        }
+    }
+
+    private fun setupChart() {
         chart = HighChart()
         var json = DataContentView::class.java.getResourceAsStream("/chart.js").bufferedReader().readText()
         json = json.replace("\$title", type.toString())
@@ -28,8 +38,6 @@ class DataContentView(val type: DataType, val dataRepository: DataRepository) : 
         chart.addStyleName("mychart")
 
         compositionRoot = chart
-
-        UIs.add(Data::class, this)
     }
 
     override fun add(item: Data) {
@@ -48,5 +56,9 @@ class DataContentView(val type: DataType, val dataRepository: DataRepository) : 
         return data.joinToString(",", "[", "]") {
             "[${it.timeMillis}, ${it.value}]"
         }
+    }
+
+    override fun changeVisibility(visible: Boolean) {
+        setupChart()
     }
 }

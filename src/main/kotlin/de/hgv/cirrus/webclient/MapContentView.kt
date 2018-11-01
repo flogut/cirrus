@@ -10,10 +10,19 @@ import org.vaadin.maps.Map
 
 class MapContentView(val dataRepository: DataRepository): CustomComponent(), Updateable<Data> {
 
-    private val map: Map
+    private lateinit var map: Map
     private var point: Pair<Double, Double> = getCurrentPoint()
 
     init {
+        setupMap()
+        UIs.add(Data::class, this)
+
+        addDetachListener {
+            UIs.remove(Data::class, this)
+        }
+    }
+
+    fun setupMap() {
         map = Map()
 
         Page.getCurrent().styles.add(".mymap { padding: 10px; }")
@@ -45,8 +54,6 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
         map.setMapjs(mapjs)
 
         compositionRoot = map
-
-        UIs.add(Data::class, this)
     }
 
     override fun add(item: Data) {
@@ -65,10 +72,19 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
         }
     }
 
-    fun getCurrentPoint(): Pair<Double, Double> {
+    private fun getCurrentPoint(): Pair<Double, Double> {
         val lat = dataRepository.findTop1ByTypeOrderByTimeDesc(DataType.LATITUDE).map { it.value }.orElse(48.1)
         val lon = dataRepository.findTop1ByTypeOrderByTimeDesc(DataType.LONGITUDE).map { it.value }.orElse(11.6)
 
         return lat to lon
+    }
+
+    override fun changeVisibility(visible: Boolean) {
+        if (visible) {
+            setupMap()
+            UIs.add(Data::class, this)
+        } else {
+            UIs.remove(Data::class, this)
+        }
     }
 }

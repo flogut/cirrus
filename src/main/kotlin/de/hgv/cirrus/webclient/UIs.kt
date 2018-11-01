@@ -16,6 +16,12 @@ object UIs {
         }
     }
 
+    fun <T: Any> remove(type: KClass<T>, updateable: Updateable<T>) {
+        lock.write {
+            updateables.getOrDefault(type, mutableListOf()).remove(updateable)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T: Any> getUpdateables(type: KClass<T>): List<Updateable<T>> {
         val list = mutableListOf<Updateable<T>>()

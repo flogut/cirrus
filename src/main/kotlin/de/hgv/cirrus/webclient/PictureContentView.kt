@@ -13,29 +13,25 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
 
     private val picturesDirectory = File(CirrusApplication.serverPath)
 
-    var image: Image
+    private lateinit var image: Image
 
     init {
         Page.getCurrent().styles.add(".myimage { padding: 10px; }")
 
-        image = Image(null, getNewestImage())
-        image.setWidth("95%")
-        image.setHeight("95%")
-        image.styleName = "myimage"
-
-        compositionRoot = image
+        showImage(getNewestImage())
 
         UIs.add(Picture::class, this)
+
+        addDetachListener {
+            UIs.remove(Picture::class, this)
+        }
     }
 
     override fun add(item: Picture) {
-        println("called")
+        if (!ui.isAttached) return
+
         ui.access {
-            image = Image(null, FileResource(File("${picturesDirectory.path}\\${item.id}.jpg")))
-            image.setWidth("95%")
-            image.setHeight("95%")
-            image.styleName = "myimage"
-            compositionRoot = image
+            showImage(FileResource(File("${picturesDirectory.path}\\${item.id}.jpg")))
         }
     }
 
@@ -46,6 +42,21 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
             FileResource(File("${picturesDirectory.path}\\${pic.get().id}.jpg"))
         } else {
             null
+        }
+    }
+
+    private fun showImage(img: FileResource?) {
+        image = Image(null, img)
+        image.setWidth("95%")
+        image.setHeight("95%")
+        image.styleName = "myimage"
+
+        compositionRoot = image
+    }
+
+    override fun changeVisibility(visible: Boolean) {
+        if (visible) {
+            showImage(getNewestImage())
         }
     }
 }

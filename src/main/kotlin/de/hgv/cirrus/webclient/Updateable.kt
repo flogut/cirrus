@@ -4,4 +4,6 @@ interface Updateable<T> {
 
     fun add(item: T)
 
+    fun changeVisibility(visible: Boolean)
+
 }
