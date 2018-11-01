@@ -12,6 +12,8 @@ interface DataRepository : CrudRepository<Data, Int> {
     fun findByTimeGreaterThan(time: Date): Iterable<Data>
 
     fun findByTypeAndTimeGreaterThan(type: DataType, time: Date): Iterable<Data>
+
+    fun findTop1ByTypeOrderByTimeDesc(type: DataType): Optional<Data>
 }
 
 interface PictureRepository : CrudRepository<Picture, Int> {

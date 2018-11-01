@@ -18,7 +18,7 @@ class ContentView(val type: DataType, val dataRepository: DataRepository, val pi
 
     private fun getContentView(dataType: DataType): Component = when(dataType) {
         DataType.PICTURE -> PictureContentView(pictureRepository)
-        DataType.MAP -> MapContentView()
+        DataType.MAP -> MapContentView(dataRepository)
         else -> DataContentView(dataType, dataRepository)
     }
 

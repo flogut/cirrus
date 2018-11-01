@@ -1,18 +1,74 @@
 package de.hgv.cirrus.webclient
 
+import com.vaadin.server.Page
 import com.vaadin.ui.CustomComponent
-import com.vaadin.ui.Label
-import de.hgv.cirrus.model.Picture
+import com.vaadin.ui.JavaScript
+import de.hgv.cirrus.DataRepository
+import de.hgv.cirrus.model.Data
+import de.hgv.cirrus.model.DataType
+import org.vaadin.maps.Map
 
-class MapContentView : CustomComponent(), Updateable<Picture> {
+class MapContentView(val dataRepository: DataRepository): CustomComponent(), Updateable<Data> {
+
+    private val map: Map
+    private var point: Pair<Double, Double> = getCurrentPoint()
 
     init {
-        compositionRoot = Label("Karte")
+        map = Map()
+
+        Page.getCurrent().styles.add(".mymap { padding: 10px; }")
+        map.styleName = "mymap"
+
+        var width = 600.0
+        var height = 400.0
+        id = "mymapc"
+        JavaScript.getCurrent().addFunction("myGetSize") {
+            width = it.getNumber(0)
+            height = it.getNumber(1)
+
+            map.setWidth("${width * .95}px")
+            map.setHeight("${height * .95}px")
+        }
+        JavaScript.getCurrent()
+            .execute("myGetSize(document.getElementById('$id').clientWidth, document.getElementById('$id').clientHeight);")
+
+        map.setWidth("${width * .95}px")
+        map.setHeight("${height * .95}px")
+
+        val (lat, lon) = point
+
+        var mapjs = MapContentView::class.java.getResourceAsStream("/map.js").bufferedReader().readText()
+        mapjs = mapjs.replace("\$lat", lat.toString())
+        mapjs = mapjs.replace("\$lon", lon.toString())
+        mapjs = mapjs.replace("\$zoom", "13")
+
+        map.setMapjs(mapjs)
+
+        compositionRoot = map
+
+        UIs.add(Data::class, this)
     }
 
-    override fun add(item: Picture) {
+    override fun add(item: Data) {
+        if (!ui.isAttached) return
+
         ui.access {
-            // TODO Show picture
+            if (item.type == DataType.LATITUDE) {
+                point = item.value to point.second
+                map.manipulateMap("window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
+                                          "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);")
+            } else if (item.type == DataType.LONGITUDE) {
+                point = point.first to item.value
+                map.manipulateMap("window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
+                                          "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);")
+            }
         }
+    }
+
+    fun getCurrentPoint(): Pair<Double, Double> {
+        val lat = dataRepository.findTop1ByTypeOrderByTimeDesc(DataType.LATITUDE).map { it.value }.orElse(48.1)
+        val lon = dataRepository.findTop1ByTypeOrderByTimeDesc(DataType.LONGITUDE).map { it.value }.orElse(11.6)
+
+        return lat to lon
     }
 }

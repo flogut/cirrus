@@ -5,14 +5,12 @@ import com.jarektoro.responsivelayout.ResponsiveLayout
 import com.jarektoro.responsivelayout.ResponsiveRow
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Title
-import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.ClassResource
 import com.vaadin.server.Page
 import com.vaadin.server.Sizeable
 import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
-import com.vaadin.spring.server.SpringVaadinServlet
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
 import com.vaadin.ui.CheckBoxGroup
@@ -26,7 +24,6 @@ import com.vaadin.ui.themes.ValoTheme
 import de.hgv.cirrus.DataRepository
 import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.DataType
-import org.slf4j.bridge.SLF4JBridgeHandler
 import org.springframework.beans.factory.annotation.Autowired
 
 @SpringUI
@@ -159,16 +156,4 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
             setDefaultComponentAlignment(Alignment.MIDDLE_LEFT)
         }
     }
-}
-
-@VaadinServletConfiguration(ui = MainView::class, productionMode = false)
-class MyUIServlet: SpringVaadinServlet() {
-
-    companion object {
-        init {
-            SLF4JBridgeHandler.removeHandlersForRootLogger()
-            SLF4JBridgeHandler.install()
-        }
-    }
-
 }
