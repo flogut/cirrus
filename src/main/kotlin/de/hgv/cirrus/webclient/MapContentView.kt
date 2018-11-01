@@ -20,40 +20,38 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
         addDetachListener {
             UIs.remove(Data::class, this)
         }
+
+        Page.getCurrent().addBrowserWindowResizeListener {event ->
+            setupMap()
+        }
     }
 
-    fun setupMap() {
+    private fun setupMap() {
         map = Map()
 
         Page.getCurrent().styles.add(".mymap { padding: 10px; }")
         map.styleName = "mymap"
 
-        var width = 600.0
-        var height = 400.0
         id = "mymapc"
         JavaScript.getCurrent().addFunction("myGetSize") {
-            width = it.getNumber(0)
-            height = it.getNumber(1)
+            val width = it.getNumber(0)
 
             map.setWidth("${width * .95}px")
-            map.setHeight("${height * .95}px")
+            map.setHeight("${400 * .95}px")
+
+            val (lat, lon) = point
+
+            var mapjs = MapContentView::class.java.getResourceAsStream("/map.js").bufferedReader().readText()
+            mapjs = mapjs.replace("\$lat", lat.toString())
+            mapjs = mapjs.replace("\$lon", lon.toString())
+            mapjs = mapjs.replace("\$zoom", "13")
+
+            map.setMapjs(mapjs)
+
+            compositionRoot = map
         }
         JavaScript.getCurrent()
-            .execute("myGetSize(document.getElementById('$id').clientWidth, document.getElementById('$id').clientHeight);")
-
-        map.setWidth("${width * .95}px")
-        map.setHeight("${height * .95}px")
-
-        val (lat, lon) = point
-
-        var mapjs = MapContentView::class.java.getResourceAsStream("/map.js").bufferedReader().readText()
-        mapjs = mapjs.replace("\$lat", lat.toString())
-        mapjs = mapjs.replace("\$lon", lon.toString())
-        mapjs = mapjs.replace("\$zoom", "13")
-
-        map.setMapjs(mapjs)
-
-        compositionRoot = map
+            .execute("myGetSize(document.getElementById('$id').clientWidth);")
     }
 
     override fun add(item: Data) {
