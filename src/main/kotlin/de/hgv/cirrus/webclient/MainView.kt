@@ -93,7 +93,7 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
             event.addedSelection.forEach { show[it] = !show.getOrDefault(it, true); changeVisibility(it) }
             event.removedSelection.forEach { show[it] = !show.getOrDefault(it, true); changeVisibility(it) }
         }
-        val okButton = Button("OK")
+        val okButton = Button("Schließen")
         popupContent.addComponents(checkBoxGroup, okButton)
 
         val settingsPopup = PopupView(null, popupContent)
@@ -135,7 +135,7 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
         val containerRow = mainSectionLayout.addRow().withAlignment(Alignment.MIDDLE_CENTER).withMargin(true)
         for (dataType in DataType.values().filterNot { it.isInternal() }) {
             val column = containerRow.addColumn()
-                .withDisplayRules(12, 12, 4, 4)
+                .withDisplayRules(12, 12, 6, 4)
                 .withComponent(ContentView(dataType, dataRepository, pictureRepository))
 
             columns[dataType] = column
@@ -151,13 +151,10 @@ class MainView(@Autowired val dataRepository: DataRepository, @Autowired val pic
     }
 
     class SideMenu: ResponsiveRow() {
-        //  private ResponsiveRow row;
 
         init {
-
             // was able to create a side menu with the given parts
             // not part of responsiveLayout lib
-
             setMargin(true)
             setVerticalSpacing(true)
             setDefaultComponentAlignment(Alignment.MIDDLE_LEFT)
