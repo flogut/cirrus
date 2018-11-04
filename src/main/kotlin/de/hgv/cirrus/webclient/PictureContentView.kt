@@ -28,7 +28,10 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
     }
 
     override fun add(item: Picture) {
-        if (!ui.isAttached) return
+        if (!ui.isAttached) {
+            UIs.remove(Picture::class, this)
+            return
+        }
 
         ui.access {
             showImage(FileResource(File("${picturesDirectory.path}\\${item.id}.jpg")))
@@ -56,7 +59,10 @@ class PictureContentView(val pictureRepository: PictureRepository) : CustomCompo
 
     override fun changeVisibility(visible: Boolean) {
         if (visible) {
+            UIs.add(Picture::class, this)
             showImage(getNewestImage())
+        } else {
+            UIs.remove(Picture::class, this)
         }
     }
 }

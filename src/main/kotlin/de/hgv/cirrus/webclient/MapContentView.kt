@@ -55,7 +55,10 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
     }
 
     override fun add(item: Data) {
-        if (!ui.isAttached) return
+        if (!ui.isAttached) {
+            UIs.remove(Data::class, this)
+            return
+        }
 
         ui.access {
             if (item.type == DataType.LATITUDE) {
@@ -79,8 +82,8 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
 
     override fun changeVisibility(visible: Boolean) {
         if (visible) {
-            setupMap()
             UIs.add(Data::class, this)
+            setupMap()
         } else {
             UIs.remove(Data::class, this)
         }

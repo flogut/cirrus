@@ -41,7 +41,10 @@ class DataContentView(val type: DataType, val dataRepository: DataRepository) : 
     }
 
     override fun add(item: Data) {
-        if (!ui.isAttached) return
+        if (!ui.isAttached) {
+            UIs.remove(Data::class, this)
+            return
+        }
 
         ui.access {
             if (item.type == type) {
@@ -59,6 +62,11 @@ class DataContentView(val type: DataType, val dataRepository: DataRepository) : 
     }
 
     override fun changeVisibility(visible: Boolean) {
-        setupChart()
+        if (visible) {
+            UIs.add(Data::class, this)
+            setupChart()
+        } else {
+            UIs.remove(Data::class, this)
+        }
     }
 }
