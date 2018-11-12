@@ -13,7 +13,4 @@ class ReceiveDataWebSocketHandler: TextWebSocketHandler() {
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
         WebSocketSessions.receiveDataSessions.remove(session)
     }
-
-
-
 }

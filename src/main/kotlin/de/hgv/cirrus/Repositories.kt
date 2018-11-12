@@ -6,7 +6,7 @@ import de.hgv.cirrus.model.Picture
 import org.springframework.data.repository.CrudRepository
 import java.util.*
 
-interface DataRepository : CrudRepository<Data, Int> {
+interface DataRepository: CrudRepository<Data, Int> {
     fun findByType(type: DataType): Iterable<Data>
 
     fun findByTimeGreaterThan(time: Date): Iterable<Data>
@@ -16,6 +16,6 @@ interface DataRepository : CrudRepository<Data, Int> {
     fun findTop1ByTypeOrderByTimeDesc(type: DataType): Optional<Data>
 }
 
-interface PictureRepository : CrudRepository<Picture, Int> {
+interface PictureRepository: CrudRepository<Picture, Int> {
     fun findTop1ByOrderByTimeDesc(): Optional<Picture>
 }

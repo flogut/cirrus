@@ -6,7 +6,11 @@ import de.hgv.cirrus.DataRepository
 import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.DataType
 
-class ContentView(val type: DataType, val dataRepository: DataRepository, val pictureRepository: PictureRepository): CustomComponent() {
+class ContentView(
+    val type: DataType,
+    private val dataRepository: DataRepository,
+    private val pictureRepository: PictureRepository
+): CustomComponent() {
 
     private val contentView: Updateable<*> = getContentView(type)
 
@@ -20,10 +24,9 @@ class ContentView(val type: DataType, val dataRepository: DataRepository, val pi
         contentView.changeVisibility(visible)
     }
 
-    private fun getContentView(dataType: DataType): Updateable<*> = when(dataType) {
+    private fun getContentView(dataType: DataType): Updateable<*> = when (dataType) {
         DataType.PICTURE -> PictureContentView(pictureRepository)
         DataType.MAP -> MapContentView(dataRepository)
         else -> DataContentView(dataType, dataRepository)
     }
-
 }

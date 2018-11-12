@@ -9,7 +9,7 @@ import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.Picture
 import java.io.File
 
-class PictureContentView(val pictureRepository: PictureRepository) : CustomComponent(), Updateable<Picture> {
+class PictureContentView(private val pictureRepository: PictureRepository): CustomComponent(), Updateable<Picture> {
 
     private val picturesDirectory = File(CirrusApplication.serverPath)
 

@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.util.*
 
-class SendDataWebSocket(val dataRepository: DataRepository): TextWebSocketHandler() {
+class SendDataWebSocket(private val dataRepository: DataRepository): TextWebSocketHandler() {
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val text = message.payload
@@ -29,10 +29,10 @@ class SendDataWebSocket(val dataRepository: DataRepository): TextWebSocketHandle
         var data = Data(UUID.randomUUID().toString(), type, value, date, date.time)
 
         data = dataRepository.save(data)
+        val textMessage = TextMessage(jacksonObjectMapper().writeValueAsString(data))
 
-        WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(data))) }
+        WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(textMessage) }
 
         UIs.getUpdateables(Data::class).forEach { it.add(data) }
     }
-
 }

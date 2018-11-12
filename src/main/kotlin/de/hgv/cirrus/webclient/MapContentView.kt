@@ -8,7 +8,7 @@ import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
 import org.vaadin.maps.Map
 
-class MapContentView(val dataRepository: DataRepository): CustomComponent(), Updateable<Data> {
+class MapContentView(private val dataRepository: DataRepository): CustomComponent(), Updateable<Data> {
 
     private lateinit var map: Map
     private var point: Pair<Double, Double> = getCurrentPoint()
@@ -21,7 +21,7 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
             UIs.remove(Data::class, this)
         }
 
-        Page.getCurrent().addBrowserWindowResizeListener {event ->
+        Page.getCurrent().addBrowserWindowResizeListener { _ ->
             setupMap()
         }
     }
@@ -63,12 +63,16 @@ class MapContentView(val dataRepository: DataRepository): CustomComponent(), Upd
         ui.access {
             if (item.type == DataType.LATITUDE) {
                 point = item.value to point.second
-                map.manipulateMap("window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
-                                          "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);")
+                map.manipulateMap(
+                    "window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
+                            "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);"
+                )
             } else if (item.type == DataType.LONGITUDE) {
                 point = point.first to item.value
-                map.manipulateMap("window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
-                                          "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);")
+                map.manipulateMap(
+                    "window.vaadinMarkers.get('${map.getDomId()}').setLatLng([${point.first}, ${point.second}]);\n" +
+                            "window.vaadinMaps.get('${map.getDomId()}').setView([${point.first}, ${point.second}]);"
+                )
             }
         }
     }

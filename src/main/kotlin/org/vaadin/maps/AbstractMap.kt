@@ -5,7 +5,7 @@ import com.vaadin.ui.JavaScript
 
 abstract class AbstractMap: AbstractJavaScriptComponent() {
 
-    var mapId = nextMapId()
+    private var mapId: Int = nextMapId()
 
     init {
         id = getDomId()
@@ -30,9 +30,9 @@ abstract class AbstractMap: AbstractJavaScriptComponent() {
     companion object {
 
         @JvmStatic
-        var currMapId = 0
+        var currMapId: Int = 0
 
         @JvmStatic
-        fun nextMapId() = ++currMapId
+        fun nextMapId(): Int = ++currMapId
     }
 }

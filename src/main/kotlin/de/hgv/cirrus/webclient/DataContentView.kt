@@ -7,7 +7,8 @@ import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
 import org.vaadin.highcharts.HighChart
 
-class DataContentView(val type: DataType, val dataRepository: DataRepository) : CustomComponent(), Updateable<Data> {
+class DataContentView(val type: DataType, private val dataRepository: DataRepository): CustomComponent(),
+                                                                                       Updateable<Data> {
 
     private lateinit var chart: HighChart
 

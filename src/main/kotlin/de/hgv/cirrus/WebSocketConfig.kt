@@ -13,7 +13,8 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @Configuration
 @EnableWebSocket
-class WebSocketConfig(val dataRepository: DataRepository, val pictureRepository: PictureRepository): WebSocketConfigurer {
+class WebSocketConfig(val dataRepository: DataRepository, val pictureRepository: PictureRepository):
+    WebSocketConfigurer {
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry.addHandler(ReceiveDataWebSocketHandler(), "/receiveData")
@@ -33,14 +34,15 @@ class WebSocketConfig(val dataRepository: DataRepository, val pictureRepository:
     }
 
     @Bean
-    fun receiveDataWebSocketHandler() = ReceiveDataWebSocketHandler()
+    fun receiveDataWebSocketHandler(): ReceiveDataWebSocketHandler = ReceiveDataWebSocketHandler()
 
     @Bean
-    fun receivePicturesWebSocketHandler() = ReceivePicturesWebSocketHandler()
+    fun receivePicturesWebSocketHandler(): ReceivePicturesWebSocketHandler = ReceivePicturesWebSocketHandler()
 
     @Bean
-    fun sendDataWebSocketHandler(dataRepository: DataRepository) = SendDataWebSocket(dataRepository)
+    fun sendDataWebSocketHandler(dataRepository: DataRepository): SendDataWebSocket = SendDataWebSocket(dataRepository)
 
     @Bean
-    fun sendPicturesWebSocketHandler(pictureRepository: PictureRepository) = SendPicturesWebSocket(pictureRepository)
+    fun sendPicturesWebSocketHandler(pictureRepository: PictureRepository): SendPicturesWebSocket =
+        SendPicturesWebSocket(pictureRepository)
 }

@@ -12,11 +12,21 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.File
 import java.util.*
 
-class SendPicturesWebSocket(val pictureRepository: PictureRepository): TextWebSocketHandler() {
+class SendPicturesWebSocket(private val pictureRepository: PictureRepository): TextWebSocketHandler() {
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val bytes = Base64.getDecoder().decode(message.payload)
 
+        handlePicture(bytes)
+    }
+
+    override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
+        val bytes = message.payload
+
+        handlePicture(bytes.array())
+    }
+
+    private fun handlePicture(bytes: ByteArray) {
         val time = Date()
         val id = UUID.randomUUID().toString()
 
@@ -24,24 +34,9 @@ class SendPicturesWebSocket(val pictureRepository: PictureRepository): TextWebSo
         imageFile.writeBytes(bytes)
 
         val pic = pictureRepository.save(Picture(id, time, "jpg"))
+        val textMessage = TextMessage(jacksonObjectMapper().writeValueAsString(pic))
 
-        WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(pic))) }
-
-        UIs.getUpdateables(Picture::class).forEach { it.add(pic) }
-    }
-
-    override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
-        val bytes = message.payload
-
-        val time = Date()
-        val id = UUID.randomUUID().toString()
-
-        val imageFile = File(CirrusApplication.serverPath + "\\$id.jpg")
-        imageFile.writeBytes(bytes.array())
-
-        val pic = pictureRepository.save(Picture(id, time, "jpg"))
-
-        WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(pic))) }
+        WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(textMessage) }
 
         UIs.getUpdateables(Picture::class).forEach { it.add(pic) }
     }

@@ -21,8 +21,10 @@ import java.util.*
 
 @Controller
 @RequestMapping("/")
-class WriteController(val dataRepository: DataRepository,
-                      val pictureRepository: PictureRepository) {
+class WriteController(
+    val dataRepository: DataRepository,
+    val pictureRepository: PictureRepository
+) {
 
     private val picturesDirectory = File(CirrusApplication.serverPath)
 
@@ -39,8 +41,9 @@ class WriteController(val dataRepository: DataRepository,
         picture.transferTo(File("${picturesDirectory.path}\\$id.jpg"))
 
         pic = pictureRepository.save(pic)
+        val message = TextMessage(jacksonObjectMapper().writeValueAsString(pic))
 
-        WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(pic))) }
+        WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(message) }
 
         UIs.getUpdateables(Picture::class).forEach { it.add(pic) }
 
@@ -58,12 +61,12 @@ class WriteController(val dataRepository: DataRepository,
         val date = Date()
         var data = Data(UUID.randomUUID().toString(), dataType, value, date, date.time)
         data = dataRepository.save(data)
+        val message = TextMessage(jacksonObjectMapper().writeValueAsString(data))
 
-        WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(TextMessage(jacksonObjectMapper().writeValueAsString(data))) }
+        WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(message) }
 
         UIs.getUpdateables(Data::class).forEach { it.add(data) }
 
         return data
     }
-
 }
