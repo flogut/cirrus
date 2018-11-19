@@ -36,14 +36,14 @@ Der Wert muss jeweils als Double vorliegen.
 
 Liste aller URLs:
 
-  - [/picture](/picture) sendet das neueste Bild zurück
+  - [/picture](http://localhost:8080/picture) sendet das neueste Bild zurück
 
-  - [/pictures/:id](/pictures/:id) sendet das Bild mit der ID :id zurück
+  - [/pictures/:id](http://localhost:8080/pictures/:id) sendet das Bild mit der ID :id zurück
 
-  - [/pictures](/pictures) sendet eine Liste aller Bilder als JSON
+  - [/pictures](http://localhost:8080/pictures) sendet eine Liste aller Bilder als JSON
     zurück
 
-  - [/data?time=:time\&type=:type](/data?time=:time&type=:type) sendet
+  - [/data?time=:time\&type=:type](http://localhost:8080/data?time=:time&type=:type) sendet
     eine Liste aller Messdaten vom Typ :type, die nach :time erstellt
     wurden, als JSON zurück. Werden einer oder mehrere der Parameter
     nicht gesetzt, werden sie nicht beachtet. :time hat das Format
@@ -53,11 +53,11 @@ Liste aller URLs:
 
 Für POST-Requests muss der Request-Parameter "token=authToken" mitgesendet werden. Liste aller URLs:
 
-  - [/data?type=:type\&value=:value](/data?type=:type&value=:value) fügt
+  - [/data?type=:type\&value=:value](http://localhost:8080/data?type=:type&value=:value) fügt
     ein Messdatum vom Typ :type mit Wert :value mit der aktuellen Zeit
     in die Datenbank ein
 
-  - [/picture](/picture) lädt ein Bild hoch. Eine HTML-form, die das
+  - [/picture](http://localhost:8080/picture) lädt ein Bild hoch. Eine HTML-form, die das
     macht, muss enctype="multipart/form-data" als Attribut haben. Der
     Name des Dateiparameters in der Request muss "picture" lauten.
 
@@ -68,7 +68,7 @@ Für POST-Requests muss der Request-Parameter "token=authToken" mitgesendet werd
 ### Messdaten
 
 Der Websocket zum Senden von Messdaten ist unter
-[/sendData](/sendData) zu erreichen. Das Protokoll ist nicht
+[/sendData](ws://localhost:8080/sendData) zu erreichen. Das Protokoll ist nicht
 [http(s)://](http\(s\)://), sondern <ws://>. Eine Nachricht muss von
 folgendem Format sein:
 
@@ -79,7 +79,7 @@ folgendem Format sein:
 ### Bilder
 
 Der Websocket zum Senden von Bildern ist unter
-[/sendPictures](/sendPictures) zu erreichen. Das Protokoll ist nicht
+[/sendPictures](ws://localhost:8080/sendPictures) zu erreichen. Das Protokoll ist nicht
 [http(s)://](http\(s\)://), sondern <ws://>. Das Bild kann entweder binär oder als Base64-dekodierte Textnachricht versendet werden.
 
 ## Empfangen
@@ -90,13 +90,13 @@ den Server über die Daten benachrichtigt.
 ### Messdaten
 
 Der Websocket zum Empfangen von Messdaten ist unter
-[/receiveData](/receiveData) zu erreichen. Das Protokoll ist nicht
+[/receiveData](ws://localhost:8080/receiveData) zu erreichen. Das Protokoll ist nicht
 [http(s)://](http\(s\)://), sondern <ws://>. Der Server sendet hierbei die Daten im JSON-Format. Eine Nachricht enthält ID, Typ, Wert, Zeit, Zeit als Millisekunden.
 
 ### Bilder
 
 Der Websocket zum Empfangen von Bildern ist unter
-[/receivePictures](/receivePictures) zu
+[/receivePictures](ws://localhost:8080/receivePictures) zu
 erreichen. Das Protokoll ist nicht [http(s)://](http\(s\)://), sondern <ws://>. Eine Nachricht im WebSocket enthält Bild-ID, Datum und Dateityp als JSON.
 
 # Web-Client
