@@ -25,6 +25,8 @@ class ReadController(
 ) {
 
     private val picturesDirectory = File(CirrusApplication.serverPath)
+    var newestId : String? = null
+    var newestContent: ByteArray = byteArrayOf()
 
     @GetMapping("/pictures")
     @ResponseBody
@@ -33,6 +35,11 @@ class ReadController(
     @GetMapping("/pictures/{id}")
     @ResponseBody
     fun getPicture(@PathVariable id: String): ResponseEntity<ByteArray> {
+        if (id == newestId) {
+            println("here")
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(newestContent)
+        }
+
         if (picturesDirectory.listFiles().any { it.nameWithoutExtension == id }) {
             val img = File("${picturesDirectory.path}\\$id.jpg")
 
@@ -65,5 +72,10 @@ class ReadController(
             dataType != null && date != null -> dataRepository.findByTypeAndTimeGreaterThan(dataType, date)
             else -> throw Exception("Mathematically guaranteed to never happen")
         }
+    }
+
+    fun setNewestPicture(id: String, content: ByteArray) {
+        newestId = id
+        newestContent = content
     }
 }

@@ -23,7 +23,8 @@ import java.util.*
 @RequestMapping("/")
 class WriteController(
     val dataRepository: DataRepository,
-    val pictureRepository: PictureRepository
+    val pictureRepository: PictureRepository,
+    val readController: ReadController
 ) {
 
     private val picturesDirectory = File(CirrusApplication.serverPath)
@@ -41,6 +42,9 @@ class WriteController(
         picture.transferTo(File("${picturesDirectory.path}\\$id.jpg"))
 
         pic = pictureRepository.save(pic)
+
+        readController.setNewestPicture(pic.id, picture.bytes)
+
         val message = TextMessage(jacksonObjectMapper().writeValueAsString(pic))
 
         WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(message) }

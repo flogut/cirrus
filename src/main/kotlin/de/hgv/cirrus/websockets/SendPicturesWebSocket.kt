@@ -3,6 +3,7 @@ package de.hgv.cirrus.websockets
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hgv.cirrus.CirrusApplication
 import de.hgv.cirrus.PictureRepository
+import de.hgv.cirrus.controller.ReadController
 import de.hgv.cirrus.model.Picture
 import de.hgv.cirrus.webclient.UIs
 import org.springframework.web.socket.BinaryMessage
@@ -12,7 +13,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.File
 import java.util.*
 
-class SendPicturesWebSocket(private val pictureRepository: PictureRepository): TextWebSocketHandler() {
+class SendPicturesWebSocket(
+    private val pictureRepository: PictureRepository,
+    private val readController: ReadController
+): TextWebSocketHandler() {
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val bytes = Base64.getDecoder().decode(message.payload)
@@ -34,8 +38,10 @@ class SendPicturesWebSocket(private val pictureRepository: PictureRepository): T
         imageFile.writeBytes(bytes)
 
         val pic = pictureRepository.save(Picture(id, time, "jpg"))
-        val textMessage = TextMessage(jacksonObjectMapper().writeValueAsString(pic))
 
+        readController.setNewestPicture(pic.id, bytes)
+
+        val textMessage = TextMessage(jacksonObjectMapper().writeValueAsString(pic))
         WebSocketSessions.receivePicturesSessions.forEach { it.sendMessage(textMessage) }
 
         UIs.getUpdateables(Picture::class).forEach { it.add(pic) }

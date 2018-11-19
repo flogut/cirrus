@@ -1,5 +1,6 @@
 package de.hgv.cirrus
 
+import de.hgv.cirrus.controller.ReadController
 import de.hgv.cirrus.websockets.ReceiveDataWebSocketHandler
 import de.hgv.cirrus.websockets.ReceivePicturesWebSocketHandler
 import de.hgv.cirrus.websockets.SendDataWebSocket
@@ -13,14 +14,18 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @Configuration
 @EnableWebSocket
-class WebSocketConfig(val dataRepository: DataRepository, val pictureRepository: PictureRepository):
+class WebSocketConfig(
+    val dataRepository: DataRepository,
+    val pictureRepository: PictureRepository,
+    val readController: ReadController
+):
     WebSocketConfigurer {
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry.addHandler(ReceiveDataWebSocketHandler(), "/receiveData")
         registry.addHandler(ReceivePicturesWebSocketHandler(), "/receivePictures")
         registry.addHandler(SendDataWebSocket(dataRepository), "/sendData")
-        registry.addHandler(SendPicturesWebSocket(pictureRepository), "/sendPictures")
+        registry.addHandler(SendPicturesWebSocket(pictureRepository, readController), "/sendPictures")
     }
 
     @Bean
@@ -33,16 +38,16 @@ class WebSocketConfig(val dataRepository: DataRepository, val pictureRepository:
         return container
     }
 
-    @Bean
-    fun receiveDataWebSocketHandler(): ReceiveDataWebSocketHandler = ReceiveDataWebSocketHandler()
-
-    @Bean
-    fun receivePicturesWebSocketHandler(): ReceivePicturesWebSocketHandler = ReceivePicturesWebSocketHandler()
-
-    @Bean
-    fun sendDataWebSocketHandler(dataRepository: DataRepository): SendDataWebSocket = SendDataWebSocket(dataRepository)
-
-    @Bean
-    fun sendPicturesWebSocketHandler(pictureRepository: PictureRepository): SendPicturesWebSocket =
-        SendPicturesWebSocket(pictureRepository)
+//    @Bean
+//    fun receiveDataWebSocketHandler(): ReceiveDataWebSocketHandler = ReceiveDataWebSocketHandler()
+//
+//    @Bean
+//    fun receivePicturesWebSocketHandler(): ReceivePicturesWebSocketHandler = ReceivePicturesWebSocketHandler()
+//
+//    @Bean
+//    fun sendDataWebSocketHandler(dataRepository: DataRepository): SendDataWebSocket = SendDataWebSocket(dataRepository)
+//
+//    @Bean
+//    fun sendPicturesWebSocketHandler(pictureRepository: PictureRepository, readController: ReadController): SendPicturesWebSocket =
+//        SendPicturesWebSocket(pictureRepository, readController)
 }

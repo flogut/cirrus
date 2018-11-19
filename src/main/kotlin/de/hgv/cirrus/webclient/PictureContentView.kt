@@ -1,7 +1,8 @@
 package de.hgv.cirrus.webclient
 
-import com.vaadin.server.FileResource
+import com.vaadin.server.ExternalResource
 import com.vaadin.server.Page
+import com.vaadin.server.Resource
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Image
 import de.hgv.cirrus.CirrusApplication
@@ -34,21 +35,22 @@ class PictureContentView(private val pictureRepository: PictureRepository): Cust
         }
 
         ui.access {
-            showImage(FileResource(File("${picturesDirectory.path}\\${item.id}.jpg")))
+            showImage(ExternalResource("${Page.getCurrent().location}/pictures/${item.id}", "image/jpeg"))
         }
     }
 
-    private fun getNewestImage(): FileResource? {
+    private fun getNewestImage(): Resource? {
         val pic = pictureRepository.findTop1ByOrderByTimeDesc()
 
         return if (pic.isPresent) {
-            FileResource(File("${picturesDirectory.path}\\${pic.get().id}.jpg"))
+//            FileResource(File("${picturesDirectory.path}\\${pic.get().id}.jpg"))
+            ExternalResource("${Page.getCurrent().location}/pictures/${pic.get().id}", "image/jpeg")
         } else {
             null
         }
     }
 
-    private fun showImage(img: FileResource?) {
+    private fun showImage(img: Resource?) {
         image = Image(null, img)
         image.setWidth("95%")
         image.setHeight("95%")
