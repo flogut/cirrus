@@ -3,6 +3,7 @@ package de.hgv.cirrus.controller
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hgv.cirrus.CirrusApplication
 import de.hgv.cirrus.DataRepository
+import de.hgv.cirrus.LineParser
 import de.hgv.cirrus.PictureRepository
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
@@ -54,7 +55,7 @@ class WriteController(
         return pic
     }
 
-    @PostMapping("/data")
+    @PostMapping("/data", params=["type", "value", "token"])
     @ResponseBody
     fun addData(@RequestParam type: String, @RequestParam value: Double, @RequestParam token: String): Data {
         if (token != "authToken") {
@@ -72,5 +73,25 @@ class WriteController(
         UIs.getUpdateables(Data::class).forEach { it.add(data) }
 
         return data
+    }
+
+    @PostMapping("/data", params = ["line", "token"])
+    @ResponseBody
+    fun addData(@RequestParam line: String, @RequestParam token: String): Iterable<Data> {
+        if (token != "authToken") {
+            throw IllegalAccessException("You are not authenticated")
+        }
+
+        val dataList = dataRepository.saveAll(LineParser.parse(line))
+        
+        for (data in dataList) {
+            val message = TextMessage(jacksonObjectMapper().writeValueAsString(data))
+
+            WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(message) }
+
+            UIs.getUpdateables(Data::class).forEach { it.add(data) }
+        }
+
+        return dataList
     }
 }

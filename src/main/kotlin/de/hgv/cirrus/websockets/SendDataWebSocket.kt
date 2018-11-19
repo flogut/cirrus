@@ -2,6 +2,7 @@ package de.hgv.cirrus.websockets
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hgv.cirrus.DataRepository
+import de.hgv.cirrus.LineParser
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
 import de.hgv.cirrus.webclient.UIs
@@ -14,9 +15,16 @@ class SendDataWebSocket(private val dataRepository: DataRepository): TextWebSock
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val text = message.payload
+        if (text.matches(Regex("(\\w+:-?\\d+.?\\d*,?)+\\r?\\n?"))) {
+            handleLine(text)
+        } else {
+            handleData(text)
+        }
+    }
 
+    private fun handleData(text: String) {
         val cmd = text.split(" ")
-        if (cmd.size == 1) {
+        if (cmd.size != 2) {
             throw IllegalArgumentException("$cmd is no valid message. Format: <data type> <value>")
         }
 
@@ -35,4 +43,17 @@ class SendDataWebSocket(private val dataRepository: DataRepository): TextWebSock
 
         UIs.getUpdateables(Data::class).forEach { it.add(data) }
     }
+
+    fun handleLine(text: String) {
+        val dataList = dataRepository.saveAll(LineParser.parse(text))
+
+        for (data in dataList) {
+            val textMessage = TextMessage(jacksonObjectMapper().writeValueAsString(data))
+
+            WebSocketSessions.receiveDataSessions.forEach { it.sendMessage(textMessage) }
+
+            UIs.getUpdateables(Data::class).forEach { it.add(data) }
+        }
+    }
+
 }
