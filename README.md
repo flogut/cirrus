@@ -19,14 +19,14 @@ Passwort: cirrusPasswort
 
 # Datentypen
 Valide Datentypen sind: 
-  - height
-  - temperature
-  - latitude
-  - longitude
-  - pressure
-  - dust
-  - voltage
-  - internal_temperature
+  - height (H)
+  - temperature (T)
+  - latitude (LA)
+  - longitude (LO)
+  - pressure (P)
+  - dust (D)
+  - voltage (Vo)
+  - internal_temperature (IT)
 
 Der Wert muss jeweils als Double vorliegen.
 
@@ -53,11 +53,18 @@ Liste aller URLs:
 
 Für POST-Requests muss der Request-Parameter "token=authToken" mitgesendet werden. Liste aller URLs:
 
-  - [/data?type=:type\&value=:value](http://localhost:8080/data?type=:type&value=:value) fügt
+  - [/data?type=:type\&value=:value\&token=:token](http://localhost:8080/data?type=:type&value=:value&token=:token) fügt
     ein Messdatum vom Typ :type mit Wert :value mit der aktuellen Zeit
     in die Datenbank ein
 
-  - [/picture](http://localhost:8080/picture) lädt ein Bild hoch. Eine HTML-form, die das
+  - [/data?line=:line\&token=:token](http://localhost:8080/data?line=:line\&token=:token) fügt Messdaten aus einer Zeile mit 
+    folgendem Format sein: 
+    ```
+        <Typkürzel>:<Wert>,<Typkürzel>:<Wert>,...
+    ```
+    z.B. also `T:29.64,P:956.40,D:4995.00,LA:0.00,LO:0.00,V:0.00,TI:13;20;26;531,H:0.4`
+
+  - [/picture?token=:token](http://localhost:8080/picture\&token=:token) lädt ein Bild hoch. Eine HTML-form, die das
     macht, muss enctype="multipart/form-data" als Attribut haben. Der
     Name des Dateiparameters in der Request muss "picture" lauten.
 
@@ -69,13 +76,15 @@ Für POST-Requests muss der Request-Parameter "token=authToken" mitgesendet werd
 
 Der Websocket zum Senden von Messdaten ist unter
 [/sendData](ws://localhost:8080/sendData) zu erreichen. Das Protokoll ist nicht
-[http(s)://](http\(s\)://), sondern <ws://>. Eine Nachricht muss von
-folgendem Format sein:
+[http(s)://](http\(s\)://), sondern <ws://>. Eine Nachricht muss von einem der folgenden Fomrate sein:
 
-``` 
-    <Datentyp> <Wert>
-```
+1. `<Datentyp> <Wert>`
+2. `<Typkürzel>:<Wert>,<Typkürzel>:<Wert>,...`
 
+Beispiel:
+
+1. `height 25.0`
+2. `T:29.64,P:956.40,D:4995.00,LA:0.00,LO:0.00,V:0.00,TI:13;20;26;531,H:0.4`
 ### Bilder
 
 Der Websocket zum Senden von Bildern ist unter
