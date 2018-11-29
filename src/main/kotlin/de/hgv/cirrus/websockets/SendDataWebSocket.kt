@@ -6,6 +6,8 @@ import de.hgv.cirrus.LineParser
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
 import de.hgv.cirrus.webclient.UIs
+import org.slf4j.LoggerFactory
+import org.springframework.web.socket.BinaryMessage
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
@@ -15,11 +17,19 @@ class SendDataWebSocket(private val dataRepository: DataRepository): TextWebSock
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val text = message.payload
-        if (text.matches(Regex("(\\w+:-?\\d+.?\\d*,?)+\\r?\\n?"))) {
-            handleLine(text)
-        } else {
+        LOGGER.info("Text-Nachricht empfangen: $text")
+        if (text.matches(Regex("""\w+ -?\d+.?\d+"""))) {
+            LOGGER.info("Nachricht ist vom Typ 1")
             handleData(text)
+        } else {
+            LOGGER.info("Nachricht ist vom Typ 2")
+            handleLine(text)
         }
+    }
+
+    override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
+        LOGGER.info("Binäre Nachricht empfangen: ${message.payload.array().joinToString()}")
+        LOGGER.info("Binäre Nachrichten werden momentan noch nicht bearbeitet => An Flo wenden")
     }
 
     private fun handleData(text: String) {
@@ -54,6 +64,10 @@ class SendDataWebSocket(private val dataRepository: DataRepository): TextWebSock
 
             UIs.getUpdateables(Data::class).forEach { it.add(data) }
         }
+    }
+
+    companion object {
+        val LOGGER = LoggerFactory.getLogger(SendDataWebSocket::class.java)
     }
 
 }

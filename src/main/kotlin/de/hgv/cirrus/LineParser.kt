@@ -2,15 +2,18 @@ package de.hgv.cirrus
 
 import de.hgv.cirrus.model.Data
 import de.hgv.cirrus.model.DataType
+import org.slf4j.LoggerFactory
 import java.util.*
 
 object LineParser {
+
+    val LOGGER = LoggerFactory.getLogger(LineParser::class.java)
 
     fun parse(line: String): List<Data> {
         val date = Date()
         val types = DataType.typeMap
 
-        return line
+        val list = line
             .split(",")
             .asSequence()
             .map { it.split(":") }
@@ -21,6 +24,10 @@ object LineParser {
             .filter { (_, value) -> value != null }
             .map { (type, value) -> Data(UUID.randomUUID().toString(), type!!, value!!, date, date.time) }
             .toList()
+
+        LOGGER.info("Nachricht enthält ${list.size} Werte")
+
+        return list
     }
 
 }

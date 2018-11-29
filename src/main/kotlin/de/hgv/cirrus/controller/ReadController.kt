@@ -36,7 +36,6 @@ class ReadController(
     @ResponseBody
     fun getPicture(@PathVariable id: String): ResponseEntity<ByteArray> {
         if (id == newestId) {
-            println("here")
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(newestContent)
         }
 
