@@ -1,6 +1,9 @@
 # Allgemeines
 
+Der Server läuft NICHT auf Java 9 oder höher.
+
 Der Server läuft auf Port 8080.
+
 Benutzung:
 
 ``` 
